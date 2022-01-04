@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <version>1.0.0</version>
+        <authors>Dan Growns</authors>
+        <owners>Dan Growns</owners>
+        <id>DgPersonal.Persistence</id>
+        <title>DgPersonal.Persistence</title>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <projectUrl>https://github.com/DanGrowns/DgPersonal.Persistence</projectUrl>
+        <repository type="git" url="https://github.com/DanGrowns/DgPersonal.Persistence.git" branch="main" />
+        <description>General persistence code that I use across multiple projects.</description>
+        <dependencies>
+            <group targetFramework=".NET5.0">
+                <dependency id="TinyCqrs" version="3.0.0" />
+                <dependency id="TinyFluentValidator" version="0.1.1" />
+                <dependency id="Dapper" version="2.0.123" />
+                <dependency id="Microsoft.Data.SqlClient" version="4.0.0" />
+                <dependency id="Microsoft.EntityFrameworkCore" version="5.0.12" />
+                <dependency id="Microsoft.EntityFrameworkCore.Abstractions" version="5.0.12" />
+                <dependency id="Microsoft.EntityFrameworkCore.Analyzers" version="5.0.12" />
+                <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="5.0.12" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Debug\net5.0\*.dll" target="lib\net5.0" />
+        <file src="bin\Debug\net5.0\*.pdb" target="lib\net5.0" />
+    </files>
+</package>
