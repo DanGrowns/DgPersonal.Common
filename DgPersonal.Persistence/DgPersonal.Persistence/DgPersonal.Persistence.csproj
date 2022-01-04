@@ -4,6 +4,11 @@
         <TargetFramework>net5.0</TargetFramework>
         <Nullable>disable</Nullable>
         <LangVersion>9</LangVersion>
+        <Title>Dan Growns</Title>
+        <Description>General persistence code that I use across multiple projects.</Description>
+        <PackageProjectUrl>https://github.com/DanGrowns/DgPersonal.Persistence</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/DanGrowns/DgPersonal.Persistence.git</RepositoryUrl>
+        <PackageVersion>1.0.1</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
