@@ -6,11 +6,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Dapper;
-using DgPersonal.Common.Attributes;
-using DgPersonal.Common.Interfaces;
+using DgPersonal.Persistence.Attributes;
+using DgPersonal.Persistence.Interfaces;
 using Microsoft.Data.SqlClient;
 
-namespace DgPersonal.Common.Classes
+namespace DgPersonal.Persistence.Classes
 {
     public class DapperQueryHandler : IDapperQueryHandler
     {

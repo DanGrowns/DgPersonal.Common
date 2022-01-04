@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace DgPersonal.Common.Interfaces
+namespace DgPersonal.Persistence.Interfaces
 {
     public interface IFindEntity<T> where T : class
     {

@@ -2,7 +2,7 @@
 using TinyCqrs.Classes;
 using TinyFluentValidator.Interfaces;
 
-namespace DgPersonal.Common.Interfaces
+namespace DgPersonal.Persistence.Interfaces
 {
     public interface IEntityFrameworkModelEditor<TEntity, TCmd>
         where TEntity : class, IStateChange<TCmd>, IValidationEntity<TEntity>, IEntity

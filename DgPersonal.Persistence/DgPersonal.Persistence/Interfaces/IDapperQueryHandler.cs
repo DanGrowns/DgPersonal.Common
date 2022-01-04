@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DgPersonal.Common.Interfaces
+namespace DgPersonal.Persistence.Interfaces
 {
     public interface IDapperQueryHandler
     {

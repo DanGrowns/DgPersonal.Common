@@ -1,8 +1,8 @@
 ﻿using System;
-using DgPersonal.Common.Interfaces;
+using DgPersonal.Persistence.Interfaces;
 using Microsoft.Extensions.Configuration;
 
-namespace DgPersonal.Common.Classes
+namespace DgPersonal.Persistence.Classes
 {
     public class SqlServerConnector : IDbConnector
     {

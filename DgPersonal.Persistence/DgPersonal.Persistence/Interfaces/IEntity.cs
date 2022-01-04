@@ -1,4 +1,4 @@
-﻿namespace DgPersonal.Common.Interfaces
+﻿namespace DgPersonal.Persistence.Interfaces
 {
     public interface IEntity
     {

@@ -3,13 +3,13 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using DgPersonal.Common.Interfaces;
+using DgPersonal.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using TinyCqrs.Classes;
 using TinyFluentValidator.Classes;
 using TinyFluentValidator.Interfaces;
 
-namespace DgPersonal.Common.Classes
+namespace DgPersonal.Persistence.Classes
 {
     public class EntityFrameworkDependentModelEditor<TEntity, TCmd>  : IEntityFrameworkDependentModelEditor<TEntity, TCmd>
         where TEntity : class, IStateChange<TCmd>, IValidationEntity<TEntity>, IEntity

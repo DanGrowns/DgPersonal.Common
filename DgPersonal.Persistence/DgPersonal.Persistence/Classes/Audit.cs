@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DgPersonal.Common.Classes
+namespace DgPersonal.Persistence.Classes
 {
     public class Audit
     {

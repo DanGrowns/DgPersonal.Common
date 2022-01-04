@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace DgPersonal.Common.Interfaces
+namespace DgPersonal.Persistence.Interfaces
 {
     public interface IDbContextNet5
     {

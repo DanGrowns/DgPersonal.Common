@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TinyCqrs.Classes;
 
-namespace DgPersonal.Common.Interfaces
+namespace DgPersonal.Persistence.Interfaces
 {
     public interface IEntityFrameworkModelDeleter
     {

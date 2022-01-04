@@ -2,12 +2,12 @@
 using System.Linq.Expressions;
 using System.Text.Json;
 using System.Threading.Tasks;
-using DgPersonal.Common.Interfaces;
+using DgPersonal.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using TinyCqrs.Classes;
 using TinyFluentValidator.Classes;
 
-namespace DgPersonal.Common.Classes
+namespace DgPersonal.Persistence.Classes
 {
     public class EntityFrameworkModelDeleter : IEntityFrameworkModelDeleter
     {

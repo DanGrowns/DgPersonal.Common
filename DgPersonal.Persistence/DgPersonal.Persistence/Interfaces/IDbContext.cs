@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using DgPersonal.Common.Classes;
+using DgPersonal.Persistence.Classes;
 using Microsoft.EntityFrameworkCore;
 
-namespace DgPersonal.Common.Interfaces
+namespace DgPersonal.Persistence.Interfaces
 {
     public interface IDbContext : IDbContextNet5
     {

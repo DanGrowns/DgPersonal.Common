@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DgPersonal.Common", "DgPersonal.Common\DgPersonal.Common.csproj", "{5DEFCCE8-1DFD-45EC-BA8E-D6A9809555CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DgPersonal.Persistence", "DgPersonal.Persistence\DgPersonal.Persistence.csproj", "{5DEFCCE8-1DFD-45EC-BA8E-D6A9809555CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

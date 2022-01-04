@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DgPersonal.Common.Attributes
+namespace DgPersonal.Persistence.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class DbProcedure : Attribute

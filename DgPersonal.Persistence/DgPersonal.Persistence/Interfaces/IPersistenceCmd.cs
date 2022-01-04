@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DgPersonal.Common.Interfaces
+namespace DgPersonal.Persistence.Interfaces
 {
     public interface IPersistenceCmd<T> where T : class
     {
