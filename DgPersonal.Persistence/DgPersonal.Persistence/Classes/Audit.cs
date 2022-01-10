@@ -29,8 +29,18 @@ namespace DgPersonal.Persistence.Classes
     
     public class AuditConfiguration : IEntityTypeConfiguration<Audit>
     {
+        private string Schema { get; }
+        private string Table { get; }
+        public AuditConfiguration(string schema, string tableName = "Audit")
+        {
+            Schema = schema;
+            Table = tableName;
+        }
+
         public void Configure(EntityTypeBuilder<Audit> builder)
         {
+            builder.ToTable(Table, Schema);
+            
             builder.HasIndex(x => x.Id).IsUnique();
             builder.HasKey(x => x.Id);
 

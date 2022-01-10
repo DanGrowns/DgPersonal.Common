@@ -35,26 +35,34 @@ namespace DgPersonal.Persistence.Classes
             return defaultSp;
         }
         
-        public async Task<TOutput> GetFirstOrDefault<TOutput>(object sqlParameters = null)
+        public async Task<TOutput> GetFirstOrDefault<TOutput>(object sqlParameters = null, string storedProcedureName = null)
         {
+            var spName = string.IsNullOrEmpty(storedProcedureName)
+                ? GetStoredProcedure<TOutput>()
+                : storedProcedureName;
+            
             await using var connection = NewDbConnection();
             
             var result = 
                 await connection.QueryFirstOrDefaultAsync<TOutput>(
-                    GetStoredProcedure<TOutput>(), 
+                    spName, 
                     sqlParameters,
                     commandType: CommandType.StoredProcedure);
     
             return result;
         }
         
-        public async Task<List<TOutput>> GetList<TOutput>(object sqlParameters = null)
+        public async Task<List<TOutput>> GetList<TOutput>(object sqlParameters = null, string storedProcedureName = null)
         {
+            var spName = string.IsNullOrEmpty(storedProcedureName)
+                ? GetStoredProcedure<TOutput>()
+                : storedProcedureName;
+            
             await using var connection = NewDbConnection();
             
             var enumerable = 
                 await connection.QueryAsync<TOutput>(
-                    GetStoredProcedure<TOutput>(), 
+                    spName, 
                     sqlParameters,
                     commandType: CommandType.StoredProcedure);
     
