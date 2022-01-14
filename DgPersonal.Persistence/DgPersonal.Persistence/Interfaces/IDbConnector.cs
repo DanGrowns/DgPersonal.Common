@@ -2,6 +2,6 @@
 {
     public interface IDbConnector
     {
-        string GetConnection();
+        string GetConnection(string key = "Sql");
     }
 }
