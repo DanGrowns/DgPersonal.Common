@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DgPersonal.Persistence.Interfaces;
@@ -13,17 +15,20 @@ namespace DgPersonal.Persistence.Classes
 {
     public class EntityFrameworkModelEditor<TEntity, TCmd>  : IEntityFrameworkModelEditor<TEntity, TCmd>
         where TEntity : class, IStateChange<TCmd>, IValidationEntity<TEntity>, IEntity
-        where TCmd : IPersistenceCmd<TEntity>, IFindEntity<TEntity>
     {
         private IDbContext DbContext { get; }
-        private CmdResult CmdResult { get; }
         private IValidator<TEntity> Validator { get; }
         private int ChangedBy { get; set; }
+        
+        private CmdResult CmdResult { get; }
+        private List<string> NavigationIncludes { get; set; }
+        private Expression<Func<TEntity, bool>> GetEntityExpression { get; set; }
 
         public EntityFrameworkModelEditor(IDbContext dbContext, IValidator<TEntity> validator)
         {
             DbContext = dbContext;
             Validator = validator;
+            
             CmdResult = new CmdResult($"Edit {typeof(TEntity).Name.SplitPascalCaseToString()}");
         }
         
@@ -31,9 +36,9 @@ namespace DgPersonal.Persistence.Classes
 
         private async Task<TEntity> GetFullModel(TCmd cmd)
         {
-            var queryable = DbContext.GetDbSet<TEntity>().Where(cmd.GetEntity());
+            var queryable = DbContext.GetDbSet<TEntity>().Where(GetEntityExpression);
             
-            queryable = cmd.NavigationIncludes().Aggregate(queryable, (current, include) 
+            queryable = NavigationIncludes.Aggregate(queryable, (current, include) 
                 => current.Include(include));
 
             return await queryable.FirstOrDefaultAsync() 
@@ -106,8 +111,22 @@ namespace DgPersonal.Persistence.Classes
 
             TrackedEntity = dbModel;
         }
+
+        private void BuildNavigationIncludes()
+        {
+            NavigationIncludes = new List<string>();
+            
+            foreach (var prop in typeof(TEntity).GetProperties(BindingFlags.Public))
+            {
+                if (prop.GetType().TypeSupportsInterface(typeof(ICollection<>))
+                    || prop.GetType().TypeSupportsInterface(typeof(IReadOnlyCollection<>)))
+                {
+                    NavigationIncludes.Add(prop.Name);
+                }
+            }
+        }
         
-        public async Task<CmdResult> Edit(TCmd cmd, int changedBy)
+        private async Task<CmdResult> EditModel(TCmd cmd, int changedBy)
         {
             ChangedBy = changedBy;
             
@@ -128,6 +147,30 @@ namespace DgPersonal.Persistence.Classes
             }
 
             return CmdResult;
+        }
+        
+        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd cmd, int changedBy) where TEditCmd : TCmd, IFindEntity<TEntity>
+        {
+            BuildNavigationIncludes();
+            GetEntityExpression = cmd.GetEntity();
+            
+            return await EditModel(cmd, changedBy);
+        }
+
+        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd cmd, int changedBy, List<string> navigationIncludes) where TEditCmd : TCmd, IFindEntity<TEntity>
+        {
+            NavigationIncludes = navigationIncludes ?? new List<string>();
+            GetEntityExpression = cmd.GetEntity();
+            
+            return await EditModel(cmd, changedBy);
+        }
+
+        public async Task<CmdResult> Edit(TCmd cmd, int changedBy, Expression<Func<TEntity, bool>> findEntityExpression, List<string> navigationIncludes = null)
+        {
+            NavigationIncludes = navigationIncludes ?? new List<string>();
+            GetEntityExpression = findEntityExpression;
+
+            return await EditModel(cmd, changedBy);
         }
     }
 }
