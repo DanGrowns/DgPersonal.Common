@@ -149,18 +149,27 @@ namespace DgPersonal.Persistence.Classes
             return CmdResult;
         }
         
-        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd cmd, int changedBy) where TEditCmd : TCmd, IFindEntity<TEntity>
+        private static ArgumentException CommandDoesNotMatchException<TEditCmd>() 
+            => throw new ArgumentException($"{typeof(TEditCmd).Name} must match ${typeof(TCmd).Name}");
+        
+        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd editCmd, int changedBy) where TEditCmd : IFindEntity<TEntity>
         {
+            if (editCmd is not TCmd cmd)
+                throw CommandDoesNotMatchException<TEditCmd>();
+            
             BuildNavigationIncludes();
-            GetEntityExpression = cmd.GetEntity();
+            GetEntityExpression = editCmd.GetEntity();
             
             return await EditModel(cmd, changedBy);
         }
 
-        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd cmd, int changedBy, List<string> navigationIncludes) where TEditCmd : TCmd, IFindEntity<TEntity>
+        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd editCmd, int changedBy, List<string> navigationIncludes) where TEditCmd : IFindEntity<TEntity>
         {
+            if (editCmd is not TCmd cmd)
+                throw CommandDoesNotMatchException<TEditCmd>();
+            
             NavigationIncludes = navigationIncludes ?? new List<string>();
-            GetEntityExpression = cmd.GetEntity();
+            GetEntityExpression = editCmd.GetEntity();
             
             return await EditModel(cmd, changedBy);
         }
