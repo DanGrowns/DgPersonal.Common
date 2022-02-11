@@ -115,14 +115,15 @@ namespace DgPersonal.Persistence.Classes
         private void BuildNavigationIncludes()
         {
             NavigationIncludes = new List<string>();
-            
-            foreach (var prop in typeof(TEntity).GetProperties(BindingFlags.Public))
+
+            var properties = typeof(TEntity).GetProperties();
+            foreach (var prop in properties)
             {
-                if (prop.GetType().TypeSupportsInterface(typeof(ICollection<>))
-                    || prop.GetType().TypeSupportsInterface(typeof(IReadOnlyCollection<>)))
-                {
+                if (prop.GetMethod != null && prop.GetMethod.IsPublic == false)
+                    continue;
+                
+                if (prop.PropertyType.TypeSupportsInterfaces(new []{typeof(ICollection<>), typeof(IReadOnlyCollection<>)}))
                     NavigationIncludes.Add(prop.Name);
-                }
             }
         }
         
