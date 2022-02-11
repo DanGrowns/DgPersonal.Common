@@ -174,7 +174,15 @@ namespace DgPersonal.Persistence.Classes
             return await EditModel(cmd, changedBy);
         }
 
-        public async Task<CmdResult> Edit(TCmd cmd, int changedBy, Expression<Func<TEntity, bool>> findEntityExpression, List<string> navigationIncludes = null)
+        public async Task<CmdResult> Edit(TCmd cmd, int changedBy, Expression<Func<TEntity, bool>> findEntityExpression)
+        {
+            BuildNavigationIncludes();
+            GetEntityExpression = findEntityExpression;
+
+            return await EditModel(cmd, changedBy);
+        }
+
+        public async Task<CmdResult> Edit(TCmd cmd, int changedBy, Expression<Func<TEntity, bool>> findEntityExpression, List<string> navigationIncludes)
         {
             NavigationIncludes = navigationIncludes ?? new List<string>();
             GetEntityExpression = findEntityExpression;
