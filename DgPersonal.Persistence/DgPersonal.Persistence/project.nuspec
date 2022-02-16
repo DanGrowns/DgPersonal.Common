@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
         <authors>Dan Growns</authors>
         <owners>Dan Growns</owners>
         <id>DgPersonal.Persistence</id>
@@ -15,7 +15,6 @@
                 <dependency id="TinyCqrs" version="3.0.0" />
                 <dependency id="TinyFluentValidator" version="0.1.1" />
                 <dependency id="Dapper" version="2.0.123" />
-                <dependency id="Mapster.Core" version="1.2.0" />
                 <dependency id="DgPersonal.Extensions.General" version="1.0.0" />
                 <dependency id="Microsoft.Data.SqlClient" version="4.0.0" />
                 <dependency id="Microsoft.EntityFrameworkCore" version="5.0.12" />
