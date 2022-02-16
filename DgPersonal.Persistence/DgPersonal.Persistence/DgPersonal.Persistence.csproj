@@ -8,11 +8,13 @@
         <Description>General persistence code that I use across multiple projects.</Description>
         <PackageProjectUrl>https://github.com/DanGrowns/DgPersonal.Persistence</PackageProjectUrl>
         <RepositoryUrl>https://github.com/DanGrowns/DgPersonal.Persistence.git</RepositoryUrl>
-        <PackageVersion>1.1.4</PackageVersion>
+        <PackageVersion>1.2.0</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Dapper" Version="2.0.123" />
+      <PackageReference Include="DgPersonal.Extensions.General" Version="1.0.0" />
+      <PackageReference Include="Mapster.Core" Version="1.2.0" />
       <PackageReference Include="Microsoft.Data.SqlClient" Version="4.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.12" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="5.0.12" />
