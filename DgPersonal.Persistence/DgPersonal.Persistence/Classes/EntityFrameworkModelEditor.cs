@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -115,14 +116,19 @@ namespace DgPersonal.Persistence.Classes
         private void BuildNavigationIncludes()
         {
             NavigationIncludes = new List<string>();
-
+            
             var properties = typeof(TEntity).GetProperties();
             foreach (var prop in properties)
             {
-                if (prop.GetMethod != null && prop.GetMethod.IsPublic == false)
+                var ignorable = prop.GetCustomAttributes<NotMappedAttribute>().Any();
+                if (ignorable)
                     continue;
-                
+
                 if (prop.PropertyType.TypeSupportsInterfaces(new []{typeof(ICollection<>), typeof(IReadOnlyCollection<>)}))
+                    NavigationIncludes.Add(prop.Name);
+
+                if (prop.PropertyType.Name == typeof(IReadOnlyCollection<>).Name
+                    || prop.PropertyType.Name == typeof(IReadOnlyList<>).Name)
                     NavigationIncludes.Add(prop.Name);
             }
         }
