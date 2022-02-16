@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -116,13 +117,19 @@ namespace DgPersonal.Persistence.Classes
         {
             NavigationIncludes = new List<string>();
             
-            foreach (var prop in typeof(TEntity).GetProperties(BindingFlags.Public))
+            var properties = typeof(TEntity).GetProperties();
+            foreach (var prop in properties)
             {
-                if (prop.GetType().TypeSupportsInterface(typeof(ICollection<>))
-                    || prop.GetType().TypeSupportsInterface(typeof(IReadOnlyCollection<>)))
-                {
+                var ignorable = prop.GetCustomAttributes<NotMappedAttribute>().Any();
+                if (ignorable)
+                    continue;
+
+                if (prop.PropertyType.TypeSupportsInterfaces(new []{typeof(ICollection<>), typeof(IReadOnlyCollection<>)}))
                     NavigationIncludes.Add(prop.Name);
-                }
+
+                if (prop.PropertyType.Name == typeof(IReadOnlyCollection<>).Name
+                    || prop.PropertyType.Name == typeof(IReadOnlyList<>).Name)
+                    NavigationIncludes.Add(prop.Name);
             }
         }
         
@@ -149,23 +156,40 @@ namespace DgPersonal.Persistence.Classes
             return CmdResult;
         }
         
-        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd cmd, int changedBy) where TEditCmd : TCmd, IFindEntity<TEntity>
+        private static ArgumentException CommandDoesNotMatchException<TEditCmd>() 
+            => throw new ArgumentException($"{typeof(TEditCmd).Name} must match ${typeof(TCmd).Name}");
+        
+        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd editCmd, int changedBy) where TEditCmd : IFindEntity<TEntity>
+        {
+            if (editCmd is not TCmd cmd)
+                throw CommandDoesNotMatchException<TEditCmd>();
+            
+            BuildNavigationIncludes();
+            GetEntityExpression = editCmd.GetEntity();
+            
+            return await EditModel(cmd, changedBy);
+        }
+
+        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd editCmd, int changedBy, List<string> navigationIncludes) where TEditCmd : IFindEntity<TEntity>
+        {
+            if (editCmd is not TCmd cmd)
+                throw CommandDoesNotMatchException<TEditCmd>();
+            
+            NavigationIncludes = navigationIncludes ?? new List<string>();
+            GetEntityExpression = editCmd.GetEntity();
+            
+            return await EditModel(cmd, changedBy);
+        }
+
+        public async Task<CmdResult> Edit(TCmd cmd, int changedBy, Expression<Func<TEntity, bool>> findEntityExpression)
         {
             BuildNavigationIncludes();
-            GetEntityExpression = cmd.GetEntity();
-            
+            GetEntityExpression = findEntityExpression;
+
             return await EditModel(cmd, changedBy);
         }
 
-        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd cmd, int changedBy, List<string> navigationIncludes) where TEditCmd : TCmd, IFindEntity<TEntity>
-        {
-            NavigationIncludes = navigationIncludes ?? new List<string>();
-            GetEntityExpression = cmd.GetEntity();
-            
-            return await EditModel(cmd, changedBy);
-        }
-
-        public async Task<CmdResult> Edit(TCmd cmd, int changedBy, Expression<Func<TEntity, bool>> findEntityExpression, List<string> navigationIncludes = null)
+        public async Task<CmdResult> Edit(TCmd cmd, int changedBy, Expression<Func<TEntity, bool>> findEntityExpression, List<string> navigationIncludes)
         {
             NavigationIncludes = navigationIncludes ?? new List<string>();
             GetEntityExpression = findEntityExpression;
