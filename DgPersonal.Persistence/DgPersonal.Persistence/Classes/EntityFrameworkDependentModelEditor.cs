@@ -3,10 +3,10 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using DgPersonal.Extensions.General.Classes;
 using DgPersonal.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using TinyCqrs.Classes;
-using TinyFluentValidator.Classes;
 using TinyFluentValidator.Interfaces;
 
 namespace DgPersonal.Persistence.Classes
