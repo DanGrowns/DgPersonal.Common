@@ -2,10 +2,10 @@
 using System.Linq.Expressions;
 using System.Text.Json;
 using System.Threading.Tasks;
+using DgPersonal.Extensions.General.Classes;
 using DgPersonal.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using TinyCqrs.Classes;
-using TinyFluentValidator.Classes;
 
 namespace DgPersonal.Persistence.Classes
 {
