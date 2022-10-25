@@ -14,15 +14,13 @@ namespace DgPersonal.Persistence.Classes
 {
     public class DapperQueryHandler : IDapperQueryHandler
     {
-        private string ConnectionString { get; }
-        protected SqlMapper.GridReader Reader { get; set; }
+        private IDbConnector DbConnector { get; }
 
         public DapperQueryHandler(IDbConnector dbConnector)
-            => ConnectionString = dbConnector.GetConnection();
+            => DbConnector = dbConnector;
         
-        private DbConnection NewDbConnection()
-            => new SqlConnection(ConnectionString);
-
+        public SqlMapper.GridReader Reader { get; private set; }
+        
         private static string GetStoredProcedure<TOutput>()
         {
             var name = typeof(TOutput).Name;
@@ -41,7 +39,7 @@ namespace DgPersonal.Persistence.Classes
                 ? GetStoredProcedure<TOutput>()
                 : storedProcedureName;
             
-            await using var connection = NewDbConnection();
+            await using var connection = DbConnector.GetConnectionAsync<SqlConnection>();
             
             var result = 
                 await connection.QueryFirstOrDefaultAsync<TOutput>(
@@ -58,7 +56,7 @@ namespace DgPersonal.Persistence.Classes
                 ? GetStoredProcedure<TOutput>()
                 : storedProcedureName;
             
-            await using var connection = NewDbConnection();
+            await using var connection = DbConnector.GetConnectionAsync<SqlConnection>();
             
             var enumerable = 
                 await connection.QueryAsync<TOutput>(
@@ -73,10 +71,10 @@ namespace DgPersonal.Persistence.Classes
         /// Suggestion: When using GetMultiple use the query handler as a base class so any transformations of data
         /// can happen as part of a single testable unit, rather than being placed in a controller or somewhere tied to a view.
         /// </summary>
-        protected async Task<TOutput> GetMultiple<TOutput>(string storedProcedureName, Func<TOutput> mapFunc,
+        public async Task<TOutput> GetMultiple<TOutput>(string storedProcedureName, Func<TOutput> mapFunc,
             object sqlParameters = null)
         {
-            await using var connection = NewDbConnection();
+            await using var connection = DbConnector.GetConnectionAsync<SqlConnection>();
             
             Reader = 
                 await connection.QueryMultipleAsync(

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using DgPersonal.Persistence.Interfaces;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
 namespace DgPersonal.Persistence.Classes
@@ -24,7 +26,7 @@ namespace DgPersonal.Persistence.Classes
         public SqlServerConnector(IConfiguration configuration) : this()
             => Configuration = configuration;
         
-        public string GetConnection(string key = "Sql")
+        private string GetConnectionString(string key = "Sql")
         {
             var existingEntry = ConnectionStrings.FirstOrDefault(x => x.Item1 == key);
             if (existingEntry != null)
@@ -35,6 +37,19 @@ namespace DgPersonal.Persistence.Classes
             ConnectionStrings.Add(new Tuple<string, string>(key, connectionString));
             
             return connectionString;
+        }
+
+        public IDbConnection GetConnection(string key = "Sql")
+        {
+            var connectionString = GetConnectionString(key);
+            return new SqlConnection(connectionString);
+        }
+        
+        public T GetConnectionAsync<T>(string key = "Sql") where T : class, IDbConnection, IAsyncDisposable
+        {
+            var connectionString = GetConnectionString(key);
+            var sql = new SqlConnection(connectionString);
+            return sql as T;
         }
     }
 }
