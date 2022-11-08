@@ -10,6 +10,7 @@ namespace DgPersonal.Persistence.Interfaces
     public interface IEntityFrameworkModelEditor<TEntity, in TCmd> 
         where TEntity : class, IStateChange<TCmd>, IValidationEntity<TEntity>, IEntity
     {
+        bool IsNewEntry { get; }
         TEntity TrackedEntity { get; }
         
         /// <summary>
