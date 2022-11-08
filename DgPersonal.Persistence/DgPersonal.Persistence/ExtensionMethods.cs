@@ -13,7 +13,6 @@ namespace DgPersonal.Persistence
             services.AddTransient<IDapperQueryHandler, DapperQueryHandler>();
             services.AddTransient<IEntityFrameworkModelDeleter, EntityFrameworkModelDeleter>();
             services.AddTransient(typeof(IEntityFrameworkModelEditor<,>), typeof(EntityFrameworkModelEditor<,>));
-            services.AddTransient(typeof(IEntityFrameworkDependentModelEditor<,>), typeof(EntityFrameworkDependentModelEditor<,>));
         }
     }
 }

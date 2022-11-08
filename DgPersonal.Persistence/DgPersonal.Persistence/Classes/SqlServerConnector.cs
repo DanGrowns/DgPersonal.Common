@@ -13,7 +13,12 @@ namespace DgPersonal.Persistence.Classes
         private List<Tuple<string, string>> ConnectionStrings { get; set; }
         private IConfiguration Configuration { get; }
 
-        private SqlServerConnector() => ConnectionStrings = new List<Tuple<string, string>>();
+        private SqlServerConnector() 
+            => ConnectionStrings = new List<Tuple<string, string>>();
+        
+        public SqlServerConnector(IConfiguration configuration) : this()
+            => Configuration = configuration;
+        
         public SqlServerConnector(string fileName = "appsettings.development.json") : this()
         {
             var builder = new ConfigurationBuilder();
@@ -22,10 +27,7 @@ namespace DgPersonal.Persistence.Classes
 
             Configuration = builder.Build();
         }
-        
-        public SqlServerConnector(IConfiguration configuration) : this()
-            => Configuration = configuration;
-        
+
         private string GetConnectionString(string key = "Sql")
         {
             var existingEntry = ConnectionStrings.FirstOrDefault(x => x.Item1 == key);
