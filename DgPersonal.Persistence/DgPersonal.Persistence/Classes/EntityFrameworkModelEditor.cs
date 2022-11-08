@@ -32,7 +32,8 @@ namespace DgPersonal.Persistence.Classes
             
             CmdResult = new CmdResult($"Edit {typeof(TEntity).Name.SplitPascalCaseToString()}");
         }
-        
+
+        public bool IsNewEntry { get; private set; }
         public TEntity TrackedEntity { get; private set; }
 
         private async Task<TEntity> GetFullModel(TCmd cmd)
@@ -140,11 +141,13 @@ namespace DgPersonal.Persistence.Classes
             try
             {
                 var dbModel = await GetFullModel(cmd);
-
-                if (dbModel.Exists())
-                    await UpdateExisting(cmd, dbModel);
-                else
+                
+                IsNewEntry = dbModel.Exists() == false;
+                
+                if (IsNewEntry)
                     await CreateNew(dbModel);
+                else
+                    await UpdateExisting(cmd, dbModel);
             }
             catch (Exception ex)
             {
