@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using DgPersonal.Extensions.General.Classes;
 using DgPersonal.Persistence.Interfaces;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 using TinyCqrs.Classes;
 using TinyFluentValidator.Interfaces;
@@ -21,6 +22,7 @@ namespace DgPersonal.Persistence.Classes
         private IValidator<TEntity> Validator { get; }
         private int ChangedBy { get; set; }
         
+        private TEntity OriginalState { get; set; }
         private CmdResult CmdResult { get; }
         private List<string> NavigationIncludes { get; set; }
         private Expression<Func<TEntity, bool>> GetEntityExpression { get; set; }
@@ -32,9 +34,9 @@ namespace DgPersonal.Persistence.Classes
             
             CmdResult = new CmdResult($"Edit {typeof(TEntity).Name.SplitPascalCaseToString()}");
         }
-
-        public bool IsNewEntry { get; private set; }
+        
         public TEntity TrackedEntity { get; private set; }
+        public bool IsNewEntry { get; private set; }
 
         private async Task<TEntity> GetFullModel(TCmd cmd)
         {
@@ -43,8 +45,18 @@ namespace DgPersonal.Persistence.Classes
             queryable = NavigationIncludes.Aggregate(queryable, (current, include) 
                 => current.Include(include));
 
-            return await queryable.FirstOrDefaultAsync() 
-                        ?? (TEntity) Activator.CreateInstance(typeof(TEntity), cmd);
+            var result = await queryable.FirstOrDefaultAsync();
+            
+            if (result == null)
+            {
+                var hasCmdConstructor = typeof(TEntity).GetConstructor(new []{typeof(TCmd)}) != null;
+                return hasCmdConstructor
+                    ? (TEntity) Activator.CreateInstance(typeof(TEntity), cmd)
+                    : Activator.CreateInstance<TEntity>();
+                
+            }
+            
+            return result;
         }
         
         protected virtual Task<IReadOnlyList<string>> ExternalValidations()
@@ -137,17 +149,24 @@ namespace DgPersonal.Persistence.Classes
         private async Task<CmdResult> EditModel(TCmd cmd, int changedBy)
         {
             ChangedBy = changedBy;
-            
+
             try
             {
                 var dbModel = await GetFullModel(cmd);
-                
+
                 IsNewEntry = dbModel.Exists() == false;
-                
                 if (IsNewEntry)
+                {
                     await CreateNew(dbModel);
+                }
                 else
+                {
+                    var hasEmptyConstructor = typeof(TEntity).GetConstructor(Type.EmptyTypes) != null;
+                    if (hasEmptyConstructor)
+                        OriginalState = dbModel.Adapt<TEntity>();
+                    
                     await UpdateExisting(cmd, dbModel);
+                }
             }
             catch (Exception ex)
             {
@@ -198,6 +217,17 @@ namespace DgPersonal.Persistence.Classes
             GetEntityExpression = findEntityExpression;
 
             return await EditModel(cmd, changedBy);
+        }
+
+        public TEntity GetOriginalState()
+        {
+            if (IsNewEntry)
+                return null;
+
+            if (OriginalState == null)
+                throw new ArgumentException("A parameterless constructor is required on the database model to obtain the original state.");
+
+            return OriginalState;
         }
     }
 }
