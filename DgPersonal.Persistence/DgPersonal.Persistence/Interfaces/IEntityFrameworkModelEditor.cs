@@ -10,8 +10,8 @@ namespace DgPersonal.Persistence.Interfaces
     public interface IEntityFrameworkModelEditor<TEntity, in TCmd> 
         where TEntity : class, IStateChange<TCmd>, IValidationEntity<TEntity>, IEntity
     {
-        bool IsNewEntry { get; }
         TEntity TrackedEntity { get; }
+        bool IsNewEntry { get; }
         
         /// <summary>
         /// All public types supporting ICollection or IReadOnlyCollection in TEntity will be included as navigations.
@@ -26,5 +26,7 @@ namespace DgPersonal.Persistence.Interfaces
         Task<CmdResult> Edit(TCmd cmd, int changedBy, Expression<Func<TEntity, bool>> findEntityExpression);
 
         Task<CmdResult> Edit(TCmd cmd, int changedBy, Expression<Func<TEntity, bool>> findEntityExpression, List<string> navigationIncludes);
+
+        TEntity GetOriginalState();
     }
 }
