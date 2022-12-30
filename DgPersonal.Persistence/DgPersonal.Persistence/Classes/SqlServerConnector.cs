@@ -10,7 +10,7 @@ namespace DgPersonal.Persistence.Classes
 {
     public class SqlServerConnector : IDbConnector
     {
-        private List<Tuple<string, string>> ConnectionStrings { get; set; }
+        private List<Tuple<string, string>> ConnectionStrings { get; }
         private IConfiguration Configuration { get; }
 
         private SqlServerConnector() 
@@ -28,7 +28,7 @@ namespace DgPersonal.Persistence.Classes
             Configuration = builder.Build();
         }
 
-        private string GetConnectionString(string key = "Sql")
+        private string GetConnectionString(string key = "Database")
         {
             var existingEntry = ConnectionStrings.FirstOrDefault(x => x.Item1 == key);
             if (existingEntry != null)
@@ -41,13 +41,13 @@ namespace DgPersonal.Persistence.Classes
             return connectionString;
         }
 
-        public IDbConnection GetConnection(string key = "Sql")
+        public IDbConnection GetConnection(string key = "Database")
         {
             var connectionString = GetConnectionString(key);
             return new SqlConnection(connectionString);
         }
         
-        public T GetConnectionAsync<T>(string key = "Sql") where T : class, IDbConnection, IAsyncDisposable
+        public T GetConnectionAsync<T>(string key = "Database") where T : class, IDbConnection, IAsyncDisposable
         {
             var connectionString = GetConnectionString(key);
             var sql = new SqlConnection(connectionString);
