@@ -8,7 +8,7 @@ using TinyFluentValidator.Interfaces;
 namespace DgPersonal.Persistence.Interfaces
 {
     public interface IEntityFrameworkModelEditor<TEntity, in TCmd> 
-        where TEntity : class, IStateChange<TCmd>, IValidationEntity<TEntity>, IEntity
+        where TEntity : class, IStateChange<TCmd>, IValidationTarget<TEntity>, IEntity
     {
         TEntity TrackedEntity { get; }
         bool IsNewEntry { get; }
