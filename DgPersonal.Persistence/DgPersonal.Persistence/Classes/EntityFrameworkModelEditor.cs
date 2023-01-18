@@ -16,7 +16,7 @@ using TinyFluentValidator.Interfaces;
 namespace DgPersonal.Persistence.Classes
 {
     public class EntityFrameworkModelEditor<TEntity, TCmd>  : IEntityFrameworkModelEditor<TEntity, TCmd>
-        where TEntity : class, IStateChange<TCmd>, IValidationEntity<TEntity>, IEntity
+        where TEntity : class, IStateChange<TCmd>, IValidationTarget<TEntity>, IEntity
     {
         private IDbContext DbContext { get; }
         private IValidator<TEntity> Validator { get; }
@@ -64,20 +64,17 @@ namespace DgPersonal.Persistence.Classes
         
         private async Task CheckStateIsValid(TEntity dbModel)
         {
-            var internalState = dbModel.StateIsValid(Validator);
+            var internalState = dbModel.IsValid(Validator);
             var externalState = await ExternalValidations();
 
             var errors = new List<string>();
-            errors.AddRange(internalState);
+            errors.AddRange(internalState.Errors);
             errors.AddRange(externalState);
             
             if (errors.Count < 1) 
                 return;
             
-            var cmdErrors = 
-                internalState.Select(x => new CmdIssue(CmdResult.SourceName, x));
-                
-            CmdResult.Issues.AddRange(cmdErrors);
+            CmdResult.Issues.AddRange(errors.Select(x => new CmdIssue(CmdResult.SourceName, x)));
         }
         
         private async Task UpdateExisting(TCmd cmd, TEntity dbModel)
@@ -181,7 +178,8 @@ namespace DgPersonal.Persistence.Classes
         private static ArgumentException CommandDoesNotMatchException<TEditCmd>() 
             => throw new ArgumentException($"{typeof(TEditCmd).Name} must match ${typeof(TCmd).Name}");
         
-        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd editCmd, int changedBy) where TEditCmd : IFindEntity<TEntity>
+        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd editCmd, int changedBy) 
+            where TEditCmd : IFindEntity<TEntity>
         {
             if (editCmd is not TCmd cmd)
                 throw CommandDoesNotMatchException<TEditCmd>();
@@ -192,7 +190,8 @@ namespace DgPersonal.Persistence.Classes
             return await EditModel(cmd, changedBy);
         }
 
-        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd editCmd, int changedBy, List<string> navigationIncludes) where TEditCmd : IFindEntity<TEntity>
+        public async Task<CmdResult> Edit<TEditCmd>(TEditCmd editCmd, int changedBy, List<string> navigationIncludes) 
+            where TEditCmd : IFindEntity<TEntity>
         {
             if (editCmd is not TCmd cmd)
                 throw CommandDoesNotMatchException<TEditCmd>();
